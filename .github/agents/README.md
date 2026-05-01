@@ -2,16 +2,19 @@
 
 ## Agent table
 
-| Agent | Personality | Responsibilities |
-|-------|-------------|-----------------|
-| **Copilot** | Precise, conservative | Code scaffolding, PR review, CI fixes |
-| **DataGen** | Inventive, label-strict | Synthetic email generation (Phase 1) |
-| **Classifier** | Analytical, skeptical | Email classification node (Phase 2) |
-| **VisionAnalyst** | Methodical, detail-oriented | Image/attachment analysis (Phase 2) |
-| **AppraisalCreator** | Thorough, structured | Legal appraisal drafting (Phase 2) |
-| **AppraisalCritic** | Adversarial, rigorous | Appraisal critique & scoring (Phase 2) |
-| **HITLGate** | Deferential, transparent | Human-in-the-loop interrupt (Phase 2) |
-| **Router** | Fast, deterministic | Terminal sink routing (Phase 2) |
+| Agent | Personality | Primary kernel/team doc | Default Tier-1 LLM |
+|-------|-------------|------------------------|-------------------|
+| **Director** | Strategic, decisive, transparent | `docs/team/director_protocol.md` | Claude Opus 4.7 |
+| **Implementer** | Precise, methodical, minimal | `docs/team/task_contracts.md` | Claude Opus 4.7 |
+| **Reviewer** | Adversarial but constructive | `docs/team/review_policy.md` | Claude Opus 4.6 |
+| **Triage** | Fast, organised, context-aware | `docs/team/escalation_matrix.md` | Claude Sonnet 4.6 |
+| **Delivery** | Methodical, gate-keeping | `docs/delivery_kpis.md` | Claude Opus 4.6 |
+| **Legal Advisor** | Rigorous, liability-aware | `docs/projects/legal-email-triage/creator-critic-pairs.md` | Claude Opus 4.7 |
+| **Vision Specialist** | Detail-oriented, evidence-focused | `docs/projects/legal-email-triage/architecture.md` | GPT-5.5 |
+| **Dataset Curator** | Inventive, label-strict | `docs/projects/legal-email-triage/dataset-spec.md` | GPT-5.5 |
+| **Eval Engineer** | Data-driven, regression-blocking | `docs/projects/legal-email-triage/evaluation-harness.md` | Claude Opus 4.7 |
+| **QA Tester** | Thorough, paranoid | `docs/team/review_policy.md` | Claude Sonnet 4.6 |
+| **Critic** | Adversarial, principled | `docs/projects/legal-email-triage/creator-critic-pairs.md` | Claude Opus 4.6 |
 
 ## Agent Privileges
 
