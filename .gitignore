@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+.eggs/
+
+# Env
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+ENV/
+
+# Testing & tools
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+
+# LangChain
+.langgraph_api/
+.langsmith/
+
+# Dataset generator outputs
+apps/dataset-generator/out/
+apps/dataset-generator/data/cache/
+
+# Runtime outputs (keep .gitkeep)
+runtime/logs/*
+!runtime/logs/.gitkeep
+runtime/run_reports/*
+!runtime/run_reports/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

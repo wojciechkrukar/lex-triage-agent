@@ -1,0 +1,29 @@
+[project]
+name = "legal-triage"
+version = "0.1.0"
+description = "LangGraph multimodal legal email triage pipeline"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "langchain-core>=0.2",
+    "langgraph>=0.2",
+    "langsmith>=0.1",
+]
+
+[project.scripts]
+legal-triage = "legal_triage.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/legal_triage"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-mock>=3.12",
+]
