@@ -20,9 +20,12 @@ def _make_raw() -> RawEmailRecord:
         sender="victim@example.com",
         attachments=[],
         gt_class="pi_lead",
-        gt_severity="high",
+        gt_severity="severe",
         gt_liability_clarity="clear",
-        gt_scenario="car_accident",
+        gt_scenario="vehicle_collision_rear_end",
+        gt_has_attachment=False,
+        gt_jurisdiction="CA",
+        gt_sol_years=2,
     )
 
 
@@ -36,7 +39,10 @@ class TestStripLabels:
         raw = _make_raw()
         public = strip_labels(raw)
         data = public.model_dump()
-        gt_fields = {"gt_class", "gt_severity", "gt_liability_clarity", "gt_scenario"}
+        gt_fields = {
+            "gt_class", "gt_severity", "gt_liability_clarity", "gt_scenario",
+            "gt_has_attachment", "gt_jurisdiction", "gt_sol_years", "gt_urgency",
+        }
         assert not gt_fields.intersection(data.keys()), (
             f"GT fields leaked into public record: {gt_fields.intersection(data.keys())}"
         )
@@ -72,18 +78,91 @@ class TestStripLabelsDict:
         raw_dict = {
             "email_id": "x",
             "gt_class": "pi_lead",
-            "gt_severity": "high",
+            "gt_severity": "severe",
             "gt_liability_clarity": "clear",
-            "gt_scenario": "car_accident",
+            "gt_scenario": "vehicle_collision_rear_end",
+            "gt_has_attachment": True,
+            "gt_jurisdiction": "CA",
+            "gt_sol_years": 2,
         }
         result = strip_labels_dict(raw_dict)
         assert "gt_class" not in result
         assert "gt_severity" not in result
         assert "gt_liability_clarity" not in result
         assert "gt_scenario" not in result
+        assert "gt_has_attachment" not in result
+        assert "gt_jurisdiction" not in result
+        assert "gt_sol_years" not in result
         assert result["email_id"] == "x"
 
     def test_does_not_mutate_input(self):
         raw_dict = {"email_id": "x", "gt_class": "spam"}
         strip_labels_dict(raw_dict)
         assert "gt_class" in raw_dict  # original unchanged
+
+
+# ---------------------------------------------------------------------------
+# Parametrised: all 12 GtScenario values must survive strip_labels() with zero leaks
+# ---------------------------------------------------------------------------
+
+_GT_FIELDS = frozenset({
+    "gt_class", "gt_severity", "gt_liability_clarity", "gt_scenario",
+    "gt_has_attachment", "gt_jurisdiction", "gt_sol_years", "gt_urgency",
+})
+
+_SCENARIO_PARAMS = [
+    # (scenario, gt_class, gt_severity, gt_sol_years, gt_jurisdiction)
+    ("vehicle_collision_rear_end",    "pi_lead",      "severe", 2,    "CA"),
+    ("slip_fall_retail",              "pi_lead",      "severe", 2,    "CA"),
+    ("dog_bite",                      "pi_lead",      "severe", 2,    "CA"),
+    ("medical_malpractice",           "pi_lead",      "severe", 2,    "CA"),
+    ("workplace_injury_construction", "pi_lead",      "severe", 2,    "CA"),
+    ("defective_product",             "pi_lead",      "severe", 2,    "CA"),
+    ("pedestrian_struck",             "pi_lead",      "severe", 2,    "CA"),
+    ("premises_liability_staircase",  "pi_lead",      "severe", 2,    "CA"),
+    ("ambiguous_pi_low_confidence",   "pi_lead",      "severe", 2,    "CA"),
+    ("general_legal_contract",        "general_legal","none",   None, "unknown"),
+    ("invoice_billing",               "invoice",      "none",   None, "unknown"),
+    ("spam_solicitation",             "spam",         "none",   None, "unknown"),
+]
+
+
+class TestStripLabelsByScenario:
+    """Parametrised chokepoint test: strip_labels() must leave zero GT fields for every scenario."""
+
+    @pytest.mark.parametrize(
+        "scenario,gt_class,gt_severity,gt_sol_years,gt_jurisdiction",
+        _SCENARIO_PARAMS,
+        ids=[p[0] for p in _SCENARIO_PARAMS],
+    )
+    def test_strip_labels_removes_all_gt_fields(
+        self,
+        scenario: str,
+        gt_class: str,
+        gt_severity: str,
+        gt_sol_years: int | None,
+        gt_jurisdiction: str,
+    ) -> None:
+        raw = RawEmailRecord(
+            email_id=f"test-{scenario}",
+            subject=f"Test subject for {scenario}",
+            body="Test body content.",
+            sender="test@example.com",
+            attachments=[],
+            gt_class=gt_class,
+            gt_severity=gt_severity,
+            gt_liability_clarity="clear",
+            gt_scenario=scenario,
+            gt_has_attachment=False,
+            gt_jurisdiction=gt_jurisdiction,
+            gt_sol_years=gt_sol_years,
+        )
+        public = strip_labels(raw)
+
+        assert isinstance(public, PublicEmailRecord)
+
+        data = public.model_dump()
+        leaked = _GT_FIELDS.intersection(data.keys())
+        assert not leaked, (
+            f"GT fields leaked into PublicEmailRecord for scenario {scenario!r}: {leaked}"
+        )

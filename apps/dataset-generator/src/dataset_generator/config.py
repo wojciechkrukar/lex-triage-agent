@@ -18,6 +18,7 @@ class DataGenConfig(BaseSettings):
 
     llm_tier: str = "tier3"
     enable_higgsfield: bool = False
+    enable_roco_images: bool = False  # ROCO dataset radiology images; see MedicalImagingProvider
 
     dataset_count: int = 100
     random_seed: int = 42

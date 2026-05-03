@@ -13,7 +13,10 @@ import copy
 
 from dataset_generator.schemas import PublicEmailRecord, RawEmailRecord
 
-_GT_FIELDS = frozenset({"gt_class", "gt_severity", "gt_liability_clarity", "gt_scenario"})
+_GT_FIELDS = frozenset({
+    "gt_class", "gt_severity", "gt_liability_clarity", "gt_scenario",
+    "gt_has_attachment", "gt_jurisdiction", "gt_sol_years", "gt_urgency",
+})
 
 
 def strip_labels(record: RawEmailRecord) -> PublicEmailRecord:

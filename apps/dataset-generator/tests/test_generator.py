@@ -2,9 +2,41 @@
 
 from __future__ import annotations
 
+import pytest
+
 from dataset_generator.chokepoint import assert_no_gt_fields
 from dataset_generator.generator import generate_public_emails, generate_raw_emails
 from dataset_generator.schemas import PublicEmailRecord, RawEmailRecord
+
+
+# ---------------------------------------------------------------------------
+# Shared fixtures for M1 exit-criteria tests (module-scoped to avoid re-running)
+# ---------------------------------------------------------------------------
+
+_ALL_12_SCENARIOS = frozenset({
+    "vehicle_collision_rear_end",
+    "slip_fall_retail",
+    "dog_bite",
+    "medical_malpractice",
+    "workplace_injury_construction",
+    "defective_product",
+    "pedestrian_struck",
+    "premises_liability_staircase",
+    "ambiguous_pi_low_confidence",
+    "general_legal_contract",
+    "invoice_billing",
+    "spam_solicitation",
+})
+
+
+@pytest.fixture(scope="module")
+def raw_batch_m1() -> list[RawEmailRecord]:
+    return generate_raw_emails(200, seed=42)
+
+
+@pytest.fixture(scope="module")
+def public_batch_m1() -> list[PublicEmailRecord]:
+    return generate_public_emails(100, seed=42)
 
 
 class TestGenerateRawEmails:
@@ -21,9 +53,19 @@ class TestGenerateRawEmails:
         emails = generate_raw_emails(count=5, seed=0)
         for e in emails:
             assert e.gt_class in {"pi_lead", "general_legal", "spam", "invoice", "other"}
-            assert e.gt_severity in {"low", "medium", "high", "critical"}
+            assert e.gt_severity in {"none", "minor", "moderate", "severe", "catastrophic"}
             assert e.gt_liability_clarity in {"clear", "unclear", "contested"}
-            assert e.gt_scenario in {"car_accident", "slip_fall", "workplace", "medical", "other"}
+            assert e.gt_scenario in {
+                "vehicle_collision_rear_end", "slip_fall_retail", "dog_bite",
+                "medical_malpractice", "workplace_injury_construction", "defective_product",
+                "pedestrian_struck", "premises_liability_staircase",
+                "general_legal_contract", "invoice_billing", "spam_solicitation",
+                "ambiguous_pi_low_confidence",
+            }
+            assert isinstance(e.gt_has_attachment, bool)
+            assert isinstance(e.gt_jurisdiction, str)
+            # sol_years is None for non-PI, int for PI
+            assert e.gt_sol_years is None or isinstance(e.gt_sol_years, int)
 
     def test_deterministic_with_same_seed(self):
         emails_a = generate_raw_emails(count=10, seed=42)
@@ -59,7 +101,60 @@ class TestGeneratePublicEmails:
         assert len(ids) == len(set(ids))
 
     def test_class_distribution_has_pi_leads(self):
-        """At least some emails should be PI leads in the raw dataset."""
+        """At least 60% of emails should be PI leads (M1 exit criterion)."""
         raw = generate_raw_emails(count=100, seed=42)
         pi_leads = [e for e in raw if e.gt_class == "pi_lead"]
-        assert len(pi_leads) >= 30, f"Expected >= 30 PI leads, got {len(pi_leads)}"
+        assert len(pi_leads) >= 60, f"Expected >= 60 PI leads, got {len(pi_leads)}"
+
+
+# ---------------------------------------------------------------------------
+# M1 exit-criteria gates — all must pass for Milestone 1 to be declared done
+# ---------------------------------------------------------------------------
+
+
+class TestM1ExitCriteria:
+    """CI gates that enforce the M1 exit criteria from dataset-spec.md.
+
+    All five tests must be green before Milestone 1 is closed.
+    Failures are hard blockers, not warnings.
+    """
+
+    def test_minimum_100_emails(self, raw_batch_m1: list[RawEmailRecord]) -> None:
+        """M1 requires at least 100 emails in a generated batch."""
+        assert len(raw_batch_m1) >= 100, (
+            f"M1 exit criterion FAILED: expected >= 100 emails, got {len(raw_batch_m1)}"
+        )
+
+    def test_pi_lead_ratio_at_least_60pct(self, raw_batch_m1: list[RawEmailRecord]) -> None:
+        """PI leads must represent at least 60% of the batch."""
+        pi_leads = [e for e in raw_batch_m1 if e.gt_class == "pi_lead"]
+        ratio = len(pi_leads) / len(raw_batch_m1)
+        assert ratio >= 0.60, (
+            f"M1 exit criterion FAILED: PI lead ratio {ratio:.1%} is below 60% threshold "
+            f"({len(pi_leads)}/{len(raw_batch_m1)} emails)"
+        )
+
+    def test_spam_ratio_at_most_15pct(self, raw_batch_m1: list[RawEmailRecord]) -> None:
+        """Spam emails must not exceed 15% of the batch."""
+        spam = [e for e in raw_batch_m1 if e.gt_class == "spam"]
+        ratio = len(spam) / len(raw_batch_m1)
+        assert ratio <= 0.15, (
+            f"M1 exit criterion FAILED: spam ratio {ratio:.1%} exceeds 15% cap "
+            f"({len(spam)}/{len(raw_batch_m1)} emails)"
+        )
+
+    def test_all_12_scenarios_represented(self, raw_batch_m1: list[RawEmailRecord]) -> None:
+        """Every one of the 12 GtScenario values must appear at least once in a 200-email batch."""
+        found = {e.gt_scenario for e in raw_batch_m1}
+        missing = _ALL_12_SCENARIOS - found
+        assert not missing, (
+            f"M1 exit criterion FAILED: not all 12 scenarios represented. "
+            f"Missing: {sorted(missing)}"
+        )
+
+    def test_no_gt_fields_leak_in_public_batch(
+        self, public_batch_m1: list[PublicEmailRecord]
+    ) -> None:
+        """strip_labels() must have removed every GT field from all public emails."""
+        for email in public_batch_m1:
+            assert_no_gt_fields(email)

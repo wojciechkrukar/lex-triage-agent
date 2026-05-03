@@ -18,6 +18,12 @@ def main() -> None:
     parser.add_argument("--count", type=int, default=None)
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--with-gt", action="store_true", help="Include ground-truth labels (for eval harness only)")
+    parser.add_argument(
+        "--realistic-split",
+        action="store_true",
+        help="Use 30%% PI / 70%% noise distribution (demo mode). "
+             "Default is 60%% PI (M1 exit-criteria mode).",
+    )
     args = parser.parse_args()
 
     cfg = DataGenConfig()
@@ -27,10 +33,10 @@ def main() -> None:
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
     if args.with_gt:
-        records = generate_raw_emails(count, seed)
+        records = generate_raw_emails(count, seed, args.realistic_split)
         print(f"WARNING: Writing {count} emails WITH ground-truth labels to {args.out}", file=sys.stderr)
     else:
-        records = generate_public_emails(count, seed)
+        records = generate_public_emails(count, seed, args.realistic_split)
         # Invariant: verify no GT fields leaked
         for r in records:
             assert_no_gt_fields(r)
