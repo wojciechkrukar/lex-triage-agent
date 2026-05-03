@@ -96,6 +96,85 @@ Hidden ground-truth fields on `RawEmailRecord`:
 
 This is enforced by a test suite (`test_chokepoint.py`). Any module outside the generator that imports a `gt_*` field fails CI.
 
+---
+
+### Label lifecycle — step by step
+
+This is the exact sequence a label travels from creation to scoring. **The agents never appear in this chain.**
+
+**Step 1 — Generation** (`generator.py`)
+
+The generator creates a `RawEmailRecord` with labels embedded:
+```python
+RawEmailRecord(
+    email_id="syn-pi-001",
+    subject="Car accident — need attorney",
+    body="I was rear-ended at a stoplight...",
+    sender="victim@example.com",
+    gt_class="pi_lead",          # ← label lives here
+    gt_severity="severe",
+    gt_scenario="vehicle_collision_rear_end",
+)
+```
+
+**Step 2 — Export** (`chokepoint.py` → `emails_gt.jsonl`)
+
+Both versions are written to disk:
+- `emails_gt.jsonl` — full record **with** `gt_*` fields (used only by the eval harness)
+- `emails.jsonl` — `strip_labels()` applied; `gt_*` fields removed (safe for any consumer)
+
+**Step 3 — Loading for evaluation** (interactive notebook `load_emails()` / `eval.py`)
+
+The eval harness reads `emails_gt.jsonl` but immediately **forks** the data:
+```python
+gt_classes = [r.get("gt_class", "other") for r in raw]   # saved as a parallel list
+public     = [_strip_gt(r) for r in raw]                  # gt_* fields dropped
+```
+From this point the two lists travel separately — labels never re-join the email objects.
+
+**Step 4 — Pipeline invocation** (agents see **only** `public`)
+
+```python
+state = initial_state(
+    email_id=record["email_id"],
+    raw_email=record["body"],      # ← no gt_* fields in record
+    attachments=record.get("attachments", []),
+)
+result = graph.invoke(state)       # classifier, vision, appraisal_creator, critic, router
+```
+The graph receives `state` — which contains only `email_id`, `raw_email`, and `attachments`. No label. Every agent decision is made purely from the email text and images.
+
+**Step 5 — Scoring** (labels re-enter only here)
+
+After `graph.invoke()` returns, the harness compares the two parallel lists:
+```python
+results.append({
+    "gt_class":       gt_class,                          # ← from the parallel label list
+    "predicted_sink": result["terminal_sink"],           # ← what the agent decided
+    "expected_sink":  _CLASS_TO_SINK.get(gt_class),      # ← correct answer
+    "correct":        result["terminal_sink"] == expected_sink,
+})
+```
+Precision, recall, and the confusion matrix are all computed from `results` — entirely outside the pipeline.
+
+**Step 6 — Regression gate** (`eval.py`)
+
+If `baseline.json` exists and Lead Precision drops by more than 5 pp, `eval.py` calls `sys.exit(1)`, blocking the merge.
+
+**Where to find each step in the code:**
+
+| Step | File | Key line(s) |
+|------|------|-------------|
+| 1 — create label | [`generator.py`](apps/dataset-generator/src/dataset_generator/generator.py) | `RawEmailRecord(gt_class=…)` |
+| 2 — strip & export | [`chokepoint.py`](apps/dataset-generator/src/dataset_generator/chokepoint.py) | `strip_labels(record)` |
+| 3 — fork on load | [`eval.py`](apps/legal-triage/src/legal_triage/eval.py) | `gt_class = record.get("gt_class")` then `_strip_gt_fields(record)` |
+| 3 — notebook fork | [`lex_triage_interactive.ipynb`](notebooks/lex_triage_interactive.ipynb) | `load_emails()` — `gt_classes` and `public` lists |
+| 4 — pipeline blind | [`graph.py`](apps/legal-triage/src/legal_triage/graph.py) | `graph.invoke(initial_state(…))` |
+| 5 — score | [`eval.py`](apps/legal-triage/src/legal_triage/eval.py) | `pi_records`, `tp/fp/fn` computation |
+| 6 — regression gate | [`eval.py`](apps/legal-triage/src/legal_triage/eval.py) | `sys.exit(1)` on precision drop |
+
+---
+
 ### Template-based generation
 
 [`generator.py`](apps/dataset-generator/src/dataset_generator/generator.py) holds two dicts of string templates per scenario:
