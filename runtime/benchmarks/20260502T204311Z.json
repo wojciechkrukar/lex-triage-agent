@@ -1,0 +1,524 @@
+{
+  "run_id": "20260502T204311Z",
+  "commit": "423b970",
+  "dataset": "apps/dataset-generator/out/emails_gt.jsonl",
+  "llm_tier": "tier3",
+  "timestamp": "20260502T204311Z",
+  "kpis": {
+    "lead_precision": 1.0,
+    "lead_recall": 0.8077,
+    "spam_fpr": 0.0,
+    "accuracy": 0.76,
+    "mean_latency_ms": 0.0,
+    "p90_latency_ms": 0.0,
+    "p95_latency_ms": 0.0,
+    "total_cost_usd": 0.0,
+    "n_records": 50,
+    "n_errors": 0,
+    "tp": 21,
+    "fp": 0,
+    "fn": 5
+  },
+  "per_record": [
+    {
+      "email_id": "f143262f-dc5c-4eed-8da0-365bf89897b9",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "GeneralLegal",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "b83cfe0b-e037-45ed-b8db-0672f42d47cc",
+      "gt_class": "invoice",
+      "expected_sink": "Refused-Invoice",
+      "predicted_sink": "Refused-Invoice",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "e9a1fa6f-81f7-4d1c-adbc-2134c30ff46e",
+      "gt_class": "other",
+      "expected_sink": "Refused-Other",
+      "predicted_sink": "Refused-Other",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "e0c53cb8-3da9-42a9-8ed4-2f1a3d4cbf37",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "43dac043-2a45-42ab-8cbf-edb0f264accc",
+      "gt_class": "general_legal",
+      "expected_sink": "GeneralLegal",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "122c9a56-01d7-4256-b860-2ab696a402f2",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "GeneralLegal",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "ab4220a7-474a-493b-bced-df2d839fbc50",
+      "gt_class": "general_legal",
+      "expected_sink": "GeneralLegal",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "1825bc54-30be-445f-a835-14f2ceb81f9d",
+      "gt_class": "general_legal",
+      "expected_sink": "GeneralLegal",
+      "predicted_sink": "GeneralLegal",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "baa4b71a-dd24-47ac-b78e-edb3693dffbc",
+      "gt_class": "other",
+      "expected_sink": "Refused-Other",
+      "predicted_sink": "Refused-Other",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "db20a56e-dc81-4fe7-8eda-8bbb71710434",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "ed3049cf-43e4-48fc-a3f2-ae24fc3d3348",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "0f9aea4b-8acd-4e10-bc59-4585944528c0",
+      "gt_class": "invoice",
+      "expected_sink": "Refused-Invoice",
+      "predicted_sink": "Refused-Invoice",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "14822f53-8201-4c62-b5f5-9b220e8fa8e0",
+      "gt_class": "general_legal",
+      "expected_sink": "GeneralLegal",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "21813d25-6552-48a6-83ff-50113d1a85dd",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "d5704f32-702c-4d20-a862-18b848f4ef12",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "1a84a51a-a9d3-47c7-ae87-905e4ca415ea",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Spam",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "afffcfd2-341e-440b-97c7-00aab7b56ea7",
+      "gt_class": "invoice",
+      "expected_sink": "Refused-Invoice",
+      "predicted_sink": "Refused-Invoice",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "e87d1c78-e7c4-41c7-8049-7b717d106c60",
+      "gt_class": "other",
+      "expected_sink": "Refused-Other",
+      "predicted_sink": "Refused-Other",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "b0e6a969-e213-42b0-b1ee-dba313432e61",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "20a04502-6e06-4097-a5e9-79778d7248e2",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Spam",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "ccc56569-f9e8-4369-a999-b735dd56cc94",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "c84a7b28-550a-4b46-acab-3301bc8f7d29",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "28c13091-444d-410b-bf87-e362cf8d446a",
+      "gt_class": "other",
+      "expected_sink": "Refused-Other",
+      "predicted_sink": "Refused-Other",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "59e4b671-4774-4c58-85f8-bc16f7860b50",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "30a900ad-939b-462d-a645-f129629c2ae3",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "4bb00f20-b27c-4026-a703-b6365380b904",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "c9277d9b-6e0d-4648-b5ce-884149732d6c",
+      "gt_class": "invoice",
+      "expected_sink": "Refused-Invoice",
+      "predicted_sink": "Refused-Invoice",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "36b5229a-acf5-481e-b131-62697118e364",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Spam",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "0640be0f-25b8-4d4b-b2fa-2de8ce7ae7f6",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "664fa663-7e8f-4095-a24c-69b6b24445a7",
+      "gt_class": "invoice",
+      "expected_sink": "Refused-Invoice",
+      "predicted_sink": "Refused-Invoice",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "8f15ba58-fce6-4504-87f8-424daae65fc1",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "b6aae05b-13d5-42f7-b09b-7d97464c04af",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "6b8e869f-d538-4b0e-b4f3-193c0ff0a55c",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "cc530e36-addc-4e13-ab3b-4d37560c95ee",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "06e745f9-88bc-439c-9f4c-3b79fb10987f",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "d4f8fd72-f382-4cfd-8083-b73a473bd358",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "0d557b61-8a17-4dfe-bfc0-0dc804f64d86",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Spam",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "5e6fea07-c453-4f1d-8199-2fdfb31022f0",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "edcb8cb6-0692-4c63-9424-aed51bac5c15",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "5eddbbbf-a959-4663-adaa-2e688861fe18",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "bb2488a3-d363-47b6-af81-cf4f7701f7bb",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "57207246-4223-423b-8c3e-bdde5ad5cf06",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "79e13cea-b0cb-461f-bd85-de89c2171429",
+      "gt_class": "invoice",
+      "expected_sink": "Refused-Invoice",
+      "predicted_sink": "Refused-Invoice",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "8ce6424d-bef5-4fe6-bf23-3d5f6cedd15d",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "1ee34dc4-3b04-4a8b-805b-fdc94e7ed827",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Spam",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "f36cb62b-892e-4161-be2d-740a1e9b23bc",
+      "gt_class": "spam",
+      "expected_sink": "Refused-Spam",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "88bd13d1-b540-430e-839f-3a254d6168bd",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "1d34d08e-7a4c-45d4-9c99-e04cf0e98b3b",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "Refused-Other",
+      "correct": false,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "0db95301-afbb-411a-a123-5a8c93b7a886",
+      "gt_class": "other",
+      "expected_sink": "Refused-Other",
+      "predicted_sink": "Refused-Other",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    },
+    {
+      "email_id": "0f6b40d0-9efb-458b-9191-b3634e2d6645",
+      "gt_class": "pi_lead",
+      "expected_sink": "NewLead",
+      "predicted_sink": "NewLead",
+      "correct": true,
+      "error": null,
+      "latency_ms": 0,
+      "cost_usd": 0.0
+    }
+  ]
+}
