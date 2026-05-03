@@ -32,6 +32,7 @@ class TriageState(TypedDict):
 
     # HITL
     hitl_required: bool
+    hitl_queue_depth: int  # snapshot of queue depth at the moment HITL was triggered
     human_decision: str | None  # "approve" | "reject" | "reclassify"
     human_notes: str | None
 
@@ -60,6 +61,7 @@ def initial_state(email_id: str, raw_email: str, attachments: list[dict] | None 
         appraisal_score=None,
         appraisal_critique=None,
         hitl_required=False,
+        hitl_queue_depth=0,
         human_decision=None,
         human_notes=None,
         terminal_sink=None,

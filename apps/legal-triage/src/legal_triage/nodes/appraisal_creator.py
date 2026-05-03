@@ -6,7 +6,7 @@ import time
 
 from langsmith import traceable
 
-from legal_triage.llm_factory import get_llm
+from legal_triage.llm_factory import extract_cost, get_llm, get_model_name
 from legal_triage.state import ModelCall, TriageState
 
 _APPRAISAL_PROMPT = """You are a senior legal intake specialist. Draft a concise appraisal
@@ -35,17 +35,20 @@ def appraisal_creator_node(state: TriageState) -> dict:
     llm = get_llm("appraisal_creator")
     model_calls = list(state.get("model_calls", []))
 
+    model_name = get_model_name("appraisal_creator")
     prompt = _APPRAISAL_PROMPT.format(
         email=state.get("raw_email", ""),
         vision_summary=state.get("vision_summary") or "No attachments.",
     )
-    appraisal_draft = llm.invoke(prompt)
+    message = llm.invoke(prompt)
+    appraisal_draft = getattr(message, "content", str(message))
 
+    cost = extract_cost(message, model_name)
     latency_ms = int((time.monotonic() - start) * 1000)
     call: ModelCall = {
         "node": "appraisal_creator",
-        "model": getattr(llm, "model_name", "unknown"),
-        "cost_usd": 0.0,
+        "model": model_name,
+        "cost_usd": cost,
         "latency_ms": latency_ms,
     }
     model_calls.append(call)
@@ -53,6 +56,6 @@ def appraisal_creator_node(state: TriageState) -> dict:
     return {
         "appraisal_draft": appraisal_draft,
         "model_calls": model_calls,
-        "total_cost_usd": state.get("total_cost_usd", 0.0),
+        "total_cost_usd": state.get("total_cost_usd", 0.0) + cost,
         "total_latency_ms": state.get("total_latency_ms", 0) + latency_ms,
     }

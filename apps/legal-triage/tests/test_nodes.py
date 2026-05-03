@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from legal_triage.nodes.appraisal_creator import appraisal_creator_node
@@ -43,19 +45,66 @@ class TestClassificationNode:
         result = classification_node(state)
         assert result["email_class"] in {"pi_lead", "general_legal", "spam", "invoice", "other"}
 
-    def test_stub_returns_pi_lead(self):
-        """Stub classifier should return 'pi_lead' for any input."""
+    def test_stub_returns_pi_lead_for_pi_email(self):
+        """Stub classifier returns 'pi_lead' when the email body contains PI keywords."""
         import os
         os.environ["LLM_TIER"] = "tier3"
+        # _base_state default email contains "car accident" — a clear PI keyword
         state = _base_state()
         result = classification_node(state)
         assert result["email_class"] == "pi_lead"
+
+    def test_stub_returns_spam_for_spam_email(self):
+        """Stub classifier returns 'spam' for a spam email body."""
+        import os
+        os.environ["LLM_TIER"] = "tier3"
+        state = _base_state(
+            raw_email="Congratulations! You have been selected to receive a cash prize. Click here."
+        )
+        result = classification_node(state)
+        assert result["email_class"] == "spam"
+
+    def test_stub_returns_invoice_for_invoice_email(self):
+        """Stub classifier returns 'invoice' for an invoice email body."""
+        import os
+        os.environ["LLM_TIER"] = "tier3"
+        state = _base_state(
+            raw_email="Please find attached invoice #1234. Total due: $500. Net 30."
+        )
+        result = classification_node(state)
+        assert result["email_class"] == "invoice"
+
+    def test_stub_returns_other_for_unrecognised_email(self):
+        """Stub classifier returns 'other' when no keywords match."""
+        import os
+        os.environ["LLM_TIER"] = "tier3"
+        state = _base_state(raw_email="Please join us for the annual holiday party.")
+        result = classification_node(state)
+        assert result["email_class"] == "other"
 
     def test_records_model_call(self):
         state = _base_state()
         result = classification_node(state)
         assert len(result["model_calls"]) >= 1
         assert result["model_calls"][-1]["node"] == "classification"
+
+    def test_model_name_not_unknown(self):
+        """Model name should be a real model/stub name, never 'unknown'."""
+        state = _base_state()
+        result = classification_node(state)
+        assert result["model_calls"][-1]["model"] != "unknown"
+
+    def test_cost_usd_field_present(self):
+        state = _base_state()
+        result = classification_node(state)
+        assert "cost_usd" in result["model_calls"][-1]
+        assert isinstance(result["model_calls"][-1]["cost_usd"], float)
+
+    def test_total_cost_usd_accumulates(self):
+        state = _base_state(total_cost_usd=0.001)
+        result = classification_node(state)
+        # In tier3 stubs emit 0 cost, so total should stay >= initial
+        assert result["total_cost_usd"] >= 0.001
 
 
 class TestVisionNode:
@@ -70,6 +119,16 @@ class TestVisionNode:
         result = vision_node(state)
         assert result["model_calls"][-1]["node"] == "vision"
 
+    def test_model_name_not_unknown(self):
+        state = _base_state(attachments=[{"filename": "img.jpg"}])
+        result = vision_node(state)
+        assert result["model_calls"][-1]["model"] != "unknown"
+
+    def test_cost_field_present(self):
+        state = _base_state(attachments=[{"filename": "img.jpg"}])
+        result = vision_node(state)
+        assert isinstance(result["model_calls"][-1]["cost_usd"], float)
+
 
 class TestAppraisalCreatorNode:
     def test_returns_draft(self):
@@ -82,6 +141,11 @@ class TestAppraisalCreatorNode:
         state = _base_state(email_class="pi_lead")
         result = appraisal_creator_node(state)
         assert result["model_calls"][-1]["node"] == "appraisal_creator"
+
+    def test_model_name_not_unknown(self):
+        state = _base_state(email_class="pi_lead")
+        result = appraisal_creator_node(state)
+        assert result["model_calls"][-1]["model"] != "unknown"
 
 
 class TestAppraisalCriticNode:
@@ -101,8 +165,26 @@ class TestAppraisalCriticNode:
     def test_parse_score_fallback(self):
         assert _parse_score("No score here") == 0.5
 
+    def test_model_name_not_unknown(self):
+        state = _base_state(appraisal_draft="Draft.")
+        result = appraisal_critic_node(state)
+        assert result["model_calls"][-1]["model"] != "unknown"
+
+    def test_cost_accumulates(self):
+        state = _base_state(appraisal_draft="Draft.", total_cost_usd=0.005)
+        result = appraisal_critic_node(state)
+        # stub emits 0 cost so total stays >= original
+        assert result["total_cost_usd"] >= 0.005
+
 
 class TestHITLGateNode:
+    def setup_method(self):
+        # Ensure HITL_AUTO_APPROVE is off for all production-path tests.
+        os.environ.pop("HITL_AUTO_APPROVE", None)
+
+    def teardown_method(self):
+        os.environ.pop("HITL_AUTO_APPROVE", None)
+
     def test_pi_lead_requires_hitl(self):
         state = _base_state(email_class="pi_lead", appraisal_score=0.9, class_confidence=0.95)
         result = hitl_gate_node(state)
@@ -122,6 +204,14 @@ class TestHITLGateNode:
         state = _base_state(email_class="spam", appraisal_score=0.9, class_confidence=0.3)
         result = hitl_gate_node(state)
         assert result["hitl_required"] is True
+
+    def test_auto_approve_bypasses_hitl(self):
+        """When HITL_AUTO_APPROVE=true, gate always returns hitl_required=False."""
+        os.environ["HITL_AUTO_APPROVE"] = "true"
+        state = _base_state(email_class="pi_lead", appraisal_score=0.9, class_confidence=0.95)
+        result = hitl_gate_node(state)
+        assert result["hitl_required"] is False
+        assert result.get("human_decision") == "approve"
 
 
 class TestHITLGateCondition:

@@ -7,7 +7,7 @@ import time
 
 from langsmith import traceable
 
-from legal_triage.llm_factory import get_llm
+from legal_triage.llm_factory import extract_cost, get_llm, get_model_name
 from legal_triage.state import ModelCall, TriageState
 
 _CRITIC_PROMPT = """You are an adversarial legal reviewer. Your job is to critique the following
@@ -40,17 +40,20 @@ def appraisal_critic_node(state: TriageState) -> dict:
     llm = get_llm("appraisal_critic")
     model_calls = list(state.get("model_calls", []))
 
+    model_name = get_model_name("appraisal_critic")
     prompt = _CRITIC_PROMPT.format(appraisal_draft=state.get("appraisal_draft", ""))
-    response = llm.invoke(prompt)
+    message = llm.invoke(prompt)
+    response_text = getattr(message, "content", str(message))
 
-    appraisal_score = _parse_score(response)
-    appraisal_critique = response
+    appraisal_score = _parse_score(response_text)
+    appraisal_critique = response_text
 
+    cost = extract_cost(message, model_name)
     latency_ms = int((time.monotonic() - start) * 1000)
     call: ModelCall = {
         "node": "appraisal_critic",
-        "model": getattr(llm, "model_name", "unknown"),
-        "cost_usd": 0.0,
+        "model": model_name,
+        "cost_usd": cost,
         "latency_ms": latency_ms,
     }
     model_calls.append(call)
@@ -59,6 +62,6 @@ def appraisal_critic_node(state: TriageState) -> dict:
         "appraisal_score": appraisal_score,
         "appraisal_critique": appraisal_critique,
         "model_calls": model_calls,
-        "total_cost_usd": state.get("total_cost_usd", 0.0),
+        "total_cost_usd": state.get("total_cost_usd", 0.0) + cost,
         "total_latency_ms": state.get("total_latency_ms", 0) + latency_ms,
     }
