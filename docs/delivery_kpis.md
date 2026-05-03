@@ -63,3 +63,15 @@
 - [ ] Spam FPR ≤ 2%.
 - [ ] Cost/Email ≤ $0.10 at tier1.
 - [ ] E2E Latency < 30 s at tier1 (P50).
+
+## M7 — Executive Dashboard Notebook
+
+- [ ] `notebooks/lex_triage_dashboard.ipynb` runs end-to-end without errors (Kernel → Restart and Run All).
+- [ ] §1 Graph topology rendered with correct nodes and edges.
+- [ ] §2 KPI scorecard gauges populated from `runtime/benchmarks/latest.json`.
+- [ ] §3 Confusion matrix rendered with correct class labels.
+- [ ] §4 Per-node cost breakdown visible (requires tier1 eval run).
+- [ ] §5 Latency histogram with P50/P90/P95 markers.
+- [ ] §6 HITL queue analytics with alert thresholds visible.
+- [ ] §7 CEO one-page summary card printed with correct business-impact estimates.
+- [ ] Notebook gracefully falls back to synthetic demo data if no real eval results are present.

@@ -5,13 +5,14 @@
 | ID | Name | Status | Description |
 |----|------|--------|-------------|
 | M0 | Bootstrap | ✅ Done | Initial scaffolding: apps skeleton, kernel docs, CI, LLM factory, state schema |
-| M1 | Dataset Generator Content | 🔲 Open | 100 emails, 12 scenarios, ≥ 20 attachments, image manifest |
-| M2 | Phase 2 Graph Nodes | 🔲 Open | Classification, Appraisal Creator, Legal Advisor nodes implemented |
-| M3 | Vision Provider | 🔲 Open | GPT-5.5 OpenAI vision provider + text-only fallback |
-| M4 | Eval Harness | 🔲 Open | LangSmith harness wired, baseline established, regression detection active |
-| M5 | HITL UI Handoff | 🔲 Open | HITL queue UI, human reviewer workflow, queue depth monitoring |
+| M1 | Dataset Generator Content | ✅ Done | 100 emails, 12 scenarios, ≥ 20 attachments, 50-image manifest, all M1 KPI gates green (2026-05-01) |
+| M2 | Phase 2 Graph Nodes | ✅ Done | Classification (Haiku), Appraisal Creator (Opus), Legal Advisor nodes; all 64 tests green (2026-05-02) |
+| M3 | Vision Provider | ✅ Done | GPT-4o multimodal; base64 attachments; text-only fallback; cost tracked (2026-05-02) |
+| M4 | Eval Harness | ✅ Done | `legal-triage eval` CLI; baseline in `runtime/benchmarks/`; regression gate (2026-05-02) |
+| M5 | HITL UI Handoff | ✅ Done | `hitl_queue.py` with thread-safe depth/alert logic; `hitl_gate.py` enqueues on trigger; interactive `lex_triage_interactive.ipynb` with ipywidgets approve/reject/reclassify UI; auto-mode fallback; 92 tests green (2026-05-02) |
 | M6 | Production Precision Target | 🔲 Open | Lead Precision ≥ 90% on tier1 in eval harness |
-| M7+ | Post-MVP | 🔲 Open | Jurisdiction expansion, multi-language support, CRM integration |
+| M7 | Executive Dashboard Notebook | 🔲 Open | Jupyter notebook: graph topology, KPIs, confusion matrix, cost/latency, CEO summary |
+| M8+ | Post-MVP | 🔲 Open | Jurisdiction expansion, multi-language support, CRM integration |
 
 ## Milestone exit criteria
 
